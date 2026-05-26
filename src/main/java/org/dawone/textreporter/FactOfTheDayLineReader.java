@@ -4,6 +4,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
+
 import org.json.JSONObject;
 
 /**
@@ -37,7 +39,7 @@ public class FactOfTheDayLineReader {
      * @return an array containing the fact of the day as a single string
      * @throws RuntimeException if the HTTP request fails or the response cannot be parsed
      */
-    public String[] readLines() {
+    public List<String> readLines() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiEndpoint))
                 .header("Accept", "text/json")
@@ -50,7 +52,7 @@ public class FactOfTheDayLineReader {
             );
             JSONObject responseJSON = new JSONObject(response.body());
 
-            return new String[]{ responseJSON.getString("text") };
+            return List.of(new String[]{responseJSON.getString("text")});
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch fact of the day", e);
         }
@@ -59,7 +61,7 @@ public class FactOfTheDayLineReader {
     public static void main(String[] args) {
         String apiEndpoint = "https://uselessfacts.jsph.pl//api/v2/facts/today";
         FactOfTheDayLineReader reader = new FactOfTheDayLineReader(apiEndpoint);
-        String[] lines = reader.readLines();
+        String[] lines = reader.readLines().toArray(new String[0]);
         for (String line : lines) {
             System.out.println(line);
         }
